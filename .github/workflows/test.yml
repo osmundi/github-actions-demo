@@ -39,8 +39,6 @@ jobs:
         run: |
           changed=$(ct list-changed --config ./ct.yaml --target-branch ${{ github.event.repository.default_branch }} --since HEAD~1)
           echo "List changed:" $changed
-          ct list-changed --print-config
-          ct list-changed --config ./ct.yaml --print-config
           if [[ -n "$changed" ]]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
