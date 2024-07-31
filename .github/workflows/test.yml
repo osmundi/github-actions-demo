@@ -49,5 +49,5 @@ jobs:
 
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
-        run: ct install --config ./ct.yaml 
+        run: ct install --config ./ct.yaml --since HEAD~1
 
