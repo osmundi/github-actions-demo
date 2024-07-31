@@ -25,6 +25,9 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.6.1
 
+      - name: Print github event
+        run:  echo ${{ github.event.repository.default_branch }}
+
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
