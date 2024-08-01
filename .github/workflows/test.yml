@@ -37,6 +37,14 @@ jobs:
       - name: Print oc version
         run:  oc version
 
+      - name: Login to OpenShift
+      env:
+        OPENSHIFT_SERVER_URL: https://api.fmi-rosa-dev.ewcf.p3.openshiftapps.com:443
+        OPENSHIFT_API_TOKEN: ${{ secrets.OPENSHIFT_API_TOKEN }}
+      run: |
+        oc login $OPENSHIFT_SERVER_URL --token=$OPENSHIFT_API_TOKEN
+        oc status
+
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
