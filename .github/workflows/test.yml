@@ -34,6 +34,9 @@ jobs:
       - name: Print ct version
         run:  ct version
 
+      - name: Print oc version
+        run:  oc version
+
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
