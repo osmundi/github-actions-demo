@@ -1,59 +1,59 @@
 # From: https://github.com/marketplace/actions/helm-chart-testing
 name: Lint and Test Charts
 
-on:
+on: # yamllint disable-line rule:truthy
   push:
     branches:
-      - main
+    - main
 
 jobs:
   lint-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
-      - name: Set up Helm
-        uses: azure/setup-helm@v3
-        with:
-          version: v3.14.0
+    - name: Set up Helm
+      uses: azure/setup-helm@v3
+      with:
+        version: v3.14.0
 
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-          check-latest: true
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+        check-latest: true
 
-      - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.6.1
+    - name: Set up chart-testing
+      uses: helm/chart-testing-action@v2.6.1
 
-      - name: Print github event
-        run:  echo ${{ github.event.repository.default_branch }}
+    - name: Print github event
+      run: echo ${{ github.event.repository.default_branch }}
 
-      - name: Print ct version
-        run:  ct version
+    - name: Print ct version
+      run: ct version
 
-      - name: Print oc version
-        run:  oc version
+    - name: Print oc version
+      run: oc version
 
-      - name: Login to OpenShift
-        env:
-          OPENSHIFT_SERVER_URL: https://api.fmi-rosa-dev.ewcf.p3.openshiftapps.com:443
-          OPENSHIFT_API_TOKEN: ${{ secrets.OPENSHIFT_API_TOKEN }}
-        run: |
-          oc login $OPENSHIFT_SERVER_URL --token=$OPENSHIFT_API_TOKEN
-          oc status
+    - name: Login to OpenShift
+      env:
+        OPENSHIFT_SERVER_URL: https://api.fmi-rosa-dev.ewcf.p3.openshiftapps.com:443
+        OPENSHIFT_API_TOKEN: ${{ secrets.OPENSHIFT_API_TOKEN }}
+      run: |
+        oc login $OPENSHIFT_SERVER_URL --token=$OPENSHIFT_API_TOKEN
+        oc status
 
-      - name: Run chart-testing (list-changed)
-        id: list-changed
-        run: |
-          changed=$(ct list-changed --config ./ct.yaml --target-branch ${{ github.event.repository.default_branch }} --since HEAD~1)
-          echo "List changed:" $changed
-          if [[ -n "$changed" ]]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
+    - name: Run chart-testing (list-changed)
+      id: list-changed
+      run: |
+        changed=$(ct list-changed --config ./ct.yaml --target-branch ${{ github.event.repository.default_branch }} --since HEAD~1)
+        echo "List changed:" $changed
+        if [[ -n "$changed" ]]; then
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+        fi
 
-      - name: Run chart-testing (install)
-        if: steps.list-changed.outputs.changed == 'true'
-        run: ct install --config ./ct.yaml --target-branch ${{ github.event.repository.default_branch }} --since HEAD~1 --namespace test-github-actions
+    - name: Run chart-testing (install)
+      if: steps.list-changed.outputs.changed == 'true'
+      run: ct install --config ./ct.yaml --target-branch ${{ github.event.repository.default_branch }} --since HEAD~1 --namespace test-github-actions
